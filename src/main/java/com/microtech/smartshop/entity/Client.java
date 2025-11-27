@@ -6,7 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Entity
 @Table(name = "clients")
 @Data
@@ -43,14 +42,18 @@ public class Client {
     private LocalDateTime updatedAt;
 
     @OneToOne
-    @JoinColumn(name = "user_id" , nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if (this.totalOrders == null) this.totalOrders = 0;
-        if (this.totalSpent == null) this.totalSpent = BigDecimal.ZERO;
+        if (this.tier == null)
+            this.tier = CustomerTier.BASIC;
+        if (this.totalOrders == null)
+            this.totalOrders = 0;
+        if (this.totalSpent == null)
+            this.totalSpent = BigDecimal.ZERO;
     }
 
     @PreUpdate
