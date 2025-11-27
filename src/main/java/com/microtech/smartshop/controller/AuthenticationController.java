@@ -29,11 +29,9 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody UserCreateRequestDTO request,
-                                                 HttpSession session) {
+            HttpSession session) {
 
-        UserResponseDTO response = authenticationService.login(request);
-
-        session.setAttribute("userId", response.getId());
+        UserResponseDTO response = authenticationService.login(request, session);
 
         return ResponseEntity.ok(response);
     }
