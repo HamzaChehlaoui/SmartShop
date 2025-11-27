@@ -1,4 +1,8 @@
 package com.microtech.smartshop.repository;
 
-public interface OrderItemRepository {
+import com.microtech.smartshop.entity.OrderItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+    boolean existsByProductId(Long productId);
 }
