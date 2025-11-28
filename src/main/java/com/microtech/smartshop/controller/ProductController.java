@@ -1,9 +1,11 @@
 package com.microtech.smartshop.controller;
 
+import com.microtech.smartshop.config.SecurityUtils;
 import com.microtech.smartshop.dto.request.ProductCreateRequest;
 import com.microtech.smartshop.dto.request.ProductUpdateRequest;
 import com.microtech.smartshop.dto.response.ProductResponse;
 import com.microtech.smartshop.service.ProductService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,21 +22,29 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest request) {
+    public ResponseEntity<ProductResponse> createProduct(
+            @Valid @RequestBody ProductCreateRequest request,
+            HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         ProductResponse response = productService.createProduct(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,
-                                                         @Valid @RequestBody ProductUpdateRequest request) {
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductUpdateRequest request,
+            HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         ProductResponse response = productService.updateProduct(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-
+    public ResponseEntity<String> deleteProduct(
+            @PathVariable Long id,
+            HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         return productService.deleteProduct(id);
     }
 
@@ -44,8 +54,7 @@ public class ProductController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
-            @RequestParam(value = "direction", defaultValue = "ASC") String direction
-    ) {
+            @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
         Page<ProductResponse> products = productService.listProducts(nom, page, size, sortBy, direction);
         return ResponseEntity.ok(products);
     }
