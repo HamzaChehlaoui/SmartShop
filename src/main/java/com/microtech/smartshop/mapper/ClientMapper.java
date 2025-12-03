@@ -13,7 +13,6 @@ public interface ClientMapper {
 
     ClientResponseDTO toResponse(Client client);
 
-    // Alias for consistency
     default ClientResponseDTO toResponseDTO(Client client) {
         return toResponse(client);
     }

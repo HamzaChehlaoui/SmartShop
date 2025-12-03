@@ -58,7 +58,6 @@ class CommandeServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Set tvaRate field using reflection (since it's injected via @Value)
         ReflectionTestUtils.setField(commandeService, "tvaRate", new BigDecimal("0.20"));
 
         testClient = Client.builder()
@@ -88,23 +87,19 @@ class CommandeServiceTest {
 
     @Test
     void createCommande_ShouldSucceed_WithValidData() {
-        // Arrange
         when(clientRepository.findById(1L)).thenReturn(Optional.of(testClient));
         when(productRepository.findById(1L)).thenReturn(Optional.of(testProduct));
         when(commandeRepository.save(any(Commande.class))).thenAnswer(i -> i.getArgument(0));
         when(commandeMapper.toResponse(any(Commande.class))).thenReturn(new CommandeResponse());
 
-        // Act
         CommandeResponse response = commandeService.createCommande(validCommandeRequest);
 
-        // Assert
         assertNotNull(response);
         verify(commandeRepository, times(1)).save(any(Commande.class));
     }
 
     @Test
     void createCommande_ShouldFail_WhenInsufficientStock() {
-        // Arrange
         OrderItemRequest tooManyItems = new OrderItemRequest();
         tooManyItems.setProductId(1L);
         tooManyItems.setQuantite(100); // More than available stock (50)
@@ -113,7 +108,6 @@ class CommandeServiceTest {
         when(clientRepository.findById(1L)).thenReturn(Optional.of(testClient));
         when(productRepository.findById(1L)).thenReturn(Optional.of(testProduct));
 
-        // Act & Assert
         Exception exception = assertThrows(BusinessRuleException.class,
                 () -> commandeService.createCommande(validCommandeRequest));
 

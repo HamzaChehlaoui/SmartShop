@@ -63,14 +63,12 @@ class ClientServiceTest {
 
     @Test
     void getClient_ShouldReturnClient_WhenExists() {
-        // Arrange
+
         when(clientRepository.findById(1L)).thenReturn(Optional.of(testClient));
         when(clientMapper.toResponseDTO(testClient)).thenReturn(testClientResponse);
 
-        // Act
         ClientResponseDTO result = clientService.getClient(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Ahmed El Fassi", result.getName());
         verify(clientRepository, times(1)).findById(1L);
@@ -78,10 +76,8 @@ class ClientServiceTest {
 
     @Test
     void getClient_ShouldThrowException_WhenNotFound() {
-        // Arrange
         when(clientRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         Exception exception = assertThrows(ResourceNotFoundException.class,
                 () -> clientService.getClient(999L));
 

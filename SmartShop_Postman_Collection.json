@@ -433,6 +433,141 @@
 					"response": []
 				},
 				{
+					"name": "Create Commande - Code Promo Déjà Utilisé (Error)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": 1,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantite\": 2\n        }\n    ],\n    \"promoCode\": \"PROMO-2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/commandes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Commande - Code Promo Inactif (Error)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": 2,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantite\": 1\n        }\n    ],\n    \"promoCode\": \"PROMO-TEST\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/commandes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Commande - Code Promo Expiré (Error)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": 2,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantite\": 1\n        }\n    ],\n    \"promoCode\": \"PROMO-OLD1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/commandes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Commande - Code Promo Format Invalide (Error)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": 2,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantite\": 1\n        }\n    ],\n    \"promoCode\": \"INVALID\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/commandes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Commande - Sans Code Promo (Success)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": 2,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantite\": 1\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/commandes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Commande By ID",
 					"request": {
 						"method": "GET",

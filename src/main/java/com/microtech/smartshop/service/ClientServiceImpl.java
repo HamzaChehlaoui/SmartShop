@@ -100,19 +100,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private CustomerTier calculateTier(Integer totalOrders, BigDecimal totalSpent) {
-        // PLATINUM: >= 20 commandes OU >= 15,000 DH
         if (totalOrders >= 20 || totalSpent.compareTo(new BigDecimal("15000")) >= 0) {
             return CustomerTier.PLATINUM;
         }
-        // GOLD: >= 10 commandes OU >= 5,000 DH
         if (totalOrders >= 10 || totalSpent.compareTo(new BigDecimal("5000")) >= 0) {
             return CustomerTier.GOLD;
         }
-        // SILVER: >= 3 commandes OU >= 1,000 DH
         if (totalOrders >= 3 || totalSpent.compareTo(new BigDecimal("1000")) >= 0) {
             return CustomerTier.SILVER;
         }
-        // BASIC: par défaut
         return CustomerTier.BASIC;
     }
 }

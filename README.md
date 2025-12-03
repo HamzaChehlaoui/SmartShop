@@ -239,6 +239,65 @@ Total TTC : 1,080 DH
 
 ---
 
+## 🎟️ Système de Codes Promotionnels
+
+### Fonctionnalités
+
+Le système de codes promo offre une gestion avancée avec :
+- **Validation du format strict** : `PROMO-[A-Z0-9]{4}`
+- **Usage unique par client** : Un client ne peut utiliser le même code qu'une fois
+- **Périodes de validité** : Dates de début et fin configurables
+- **Pourcentages variables** : Différents taux de remise (5%, 10%, 15%, etc.)
+- **Limites d'utilisation globale** : Nombre maximum d'utilisations par code
+- **Activation/désactivation** : Contrôle du statut actif
+
+### Codes Promo Disponibles (DataSeeder)
+
+| Code | Remise | Statut | Validité | Usage Max | Description |
+|------|--------|--------|----------|-----------|-------------|
+| `PROMO-2025` | 5% | ✅ Active | 1 an | Illimité | Code général pour 2025 |
+| `PROMO-VIP1` | 10% | ✅ Active | 90 jours | 100 | Code VIP limité |
+| `PROMO-TEST` | 5% | ❌ Inactive | 60 jours | - | Code de test (désactivé) |
+| `PROMO-OLD1` | 15% | ⏰ Expiré | Passé | - | Code expiré pour tests |
+
+### Validations Automatiques
+
+Lors de l'application d'un code promo, le système vérifie :
+1. ✅ Format valide (`PROMO-[A-Z0-9]{4}`)
+2. ✅ Existence en base de données
+3. ✅ Statut actif (`isActive = true`)
+4. ✅ Période de validité (`validFrom` ≤ maintenant ≤ `validUntil`)
+5. ✅ Non utilisé par ce client (usage unique)
+6. ✅ Limite globale non atteinte
+
+### Exemple d'Utilisation
+
+**Scénario** : Client GOLD avec commande de 1,000 DH + code `PROMO-2025`
+
+```
+Sous-total HT : 1,000 DH
+Remise fidélité GOLD (10%) : -100 DH
+Remise code promo (5%) : -50 DH
+─────────────────────────────────
+Total remises : -150 DH
+Montant HT après remise : 850 DH
+TVA 20% : 170 DH
+Total TTC : 1,020 DH
+```
+
+### Messages d'Erreur
+
+| Erreur | Message |
+|--------|---------|
+| Format invalide | "Format du code promo invalide. Format attendu: PROMO-XXXX" |
+| Code inexistant | "Code promo 'PROMO-XXXX' invalide ou inactif" |
+| Pas encore valide | "Le code promo 'PROMO-XXXX' n'est pas encore valide" |
+| Expiré | "Le code promo 'PROMO-XXXX' a expiré" |
+| Déjà utilisé | "Vous avez déjà utilisé le code promo 'PROMO-XXXX'" |
+| Limite atteinte | "Le code promo 'PROMO-XXXX' a atteint sa limite d'utilisation" |
+
+---
+
 ## 🔄 Cycle de Vie d'une Commande
 
 ### Statuts et Transitions
@@ -288,6 +347,8 @@ mvn test
 - **Commande** : Commandes multi-produits
 - **OrderItem** : Lignes de commande (produit + quantité)
 - **Payment** : Paiements multi-moyens avec numérotation séquentielle
+- **PromoCode** : Codes promotionnels avec gestion des périodes de validité et limites d'utilisation
+- **PromoCodeUsage** : Historique d'utilisation des codes promo (tracking usage unique)
 
 ### Énumérations
 
@@ -303,7 +364,7 @@ mvn test
 
 1. **Validation stock** : `quantité_demandée ≤ stock_disponible`
 2. **Arrondis** : Tous les montants à **2 décimales**
-3. **Codes promo** : Format strict `PROMO-[A-Z0-9]{4}`, usage unique possible
+3. **Codes promo** : Format strict `PROMO-[A-Z0-9]{4}`, usage unique par client, gestion en base de données avec périodes de validité
 4. **TVA** : 20% par défaut (configurable via `app.tva.rate`)
 5. **Limite espèces** : Maximum **20,000 DH** par paiement (légal au Maroc)
 6. **Validation commande** : Impossible si `montantRestant > 0`

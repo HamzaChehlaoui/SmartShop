@@ -31,6 +31,8 @@ public class CommandeServiceImpl implements CommandeService {
     private final ProductRepository productRepository;
     private final CommandeMapper commandeMapper;
     private final ClientService clientService;
+    private final PromoCodeRepository promoCodeRepository;
+    private final PromoCodeUsageRepository promoCodeUsageRepository;
 
     @Value("${app.tva.rate:0.20}")
     private BigDecimal tvaRate;
@@ -74,7 +76,7 @@ public class CommandeServiceImpl implements CommandeService {
             sousTotalHt = sousTotalHt.add(totalLigne);
         }
 
-        BigDecimal remise = calculateDiscount(client.getTier(), sousTotalHt, request.getPromoCode());
+        BigDecimal remise = calculateDiscount(client, sousTotalHt, request.getPromoCode());
 
         BigDecimal montantHTApresRemise = sousTotalHt.subtract(remise).setScale(2, RoundingMode.HALF_UP);
         BigDecimal tva = montantHTApresRemise.multiply(tvaRate).setScale(2, RoundingMode.HALF_UP);
@@ -98,6 +100,22 @@ public class CommandeServiceImpl implements CommandeService {
         commande.setOrderItems(orderItems);
 
         Commande savedCommande = commandeRepository.save(commande);
+
+        if (request.getPromoCode() != null && !request.getPromoCode().isEmpty()) {
+            promoCodeRepository.findByCodeAndIsActiveTrue(request.getPromoCode())
+                    .ifPresent(promoCode -> {
+                        PromoCodeUsage usage = PromoCodeUsage.builder()
+                                .promoCode(promoCode)
+                                .client(client)
+                                .commande(savedCommande)
+                                .build();
+                        promoCodeUsageRepository.save(usage);
+
+                        // Increment usage counter
+                        promoCode.setCurrentUsages(promoCode.getCurrentUsages() + 1);
+                        promoCodeRepository.save(promoCode);
+                    });
+        }
 
         return commandeMapper.toResponse(savedCommande);
     }
@@ -127,8 +145,13 @@ public class CommandeServiceImpl implements CommandeService {
                         + commande.getMontantRestant() + " DH");
             }
 
+
             for (OrderItem item : commande.getOrderItems()) {
                 Product product = item.getProduct();
+                if(product.getStock() < item.getQuantite()){
+                    throw new BusinessRuleException("Stock insuffisant pour le produit " + product.getNom() +
+                            ". Disponible: " + product.getStock() + ", Demandé: " + item.getQuantite());
+                }
                 product.setStock(product.getStock() - item.getQuantite());
                 productRepository.save(product);
             }
@@ -166,13 +189,11 @@ public class CommandeServiceImpl implements CommandeService {
         commandeRepository.save(commande);
     }
 
-    /**
-     * Calculate discount based on customer tier and promo code
-     */
-    private BigDecimal calculateDiscount(CustomerTier tier, BigDecimal sousTotalHt, String promoCode) {
+
+    private BigDecimal calculateDiscount(Client client, BigDecimal sousTotalHt, String promoCode) {
         BigDecimal discountAmount = BigDecimal.ZERO;
 
-        switch (tier) {
+        switch (client.getTier()) {
             case SILVER:
                 if (sousTotalHt.compareTo(new BigDecimal("500")) >= 0) {
                     discountAmount = sousTotalHt.multiply(new BigDecimal("0.05"));
@@ -194,12 +215,41 @@ public class CommandeServiceImpl implements CommandeService {
                 break;
         }
 
-        // Code promo: +5% supplémentaire
         if (promoCode != null && !promoCode.isEmpty()) {
-            if (promoCode.matches("PROMO-[A-Z0-9]{4}")) {
-                BigDecimal promoDiscount = sousTotalHt.multiply(new BigDecimal("0.05"));
-                discountAmount = discountAmount.add(promoDiscount);
+            if (!promoCode.matches("PROMO-[A-Z0-9]{4}")) {
+                throw new BusinessRuleException("Format du code promo invalide. Format attendu: PROMO-XXXX");
             }
+
+            PromoCode promoCodeEntity = promoCodeRepository.findByCodeAndIsActiveTrue(promoCode)
+                    .orElseThrow(() -> new BusinessRuleException(
+                            "Code promo '" + promoCode + "' invalide ou inactif"));
+
+            LocalDateTime now = LocalDateTime.now();
+            if (promoCodeEntity.getValidFrom() != null && now.isBefore(promoCodeEntity.getValidFrom())) {
+                throw new BusinessRuleException(
+                        "Le code promo '" + promoCode + "' n'est pas encore valide");
+            }
+            if (promoCodeEntity.getValidUntil() != null && now.isAfter(promoCodeEntity.getValidUntil())) {
+                throw new BusinessRuleException(
+                        "Le code promo '" + promoCode + "' a expiré");
+            }
+
+            if (promoCodeUsageRepository.existsByPromoCodeAndClient(promoCodeEntity, client)) {
+                throw new BusinessRuleException(
+                        "Vous avez déjà utilisé le code promo '" + promoCode + "'");
+            }
+
+            if (promoCodeEntity.getMaxUsages() != null) {
+                long currentUsageCount = promoCodeUsageRepository.countByPromoCode(promoCodeEntity);
+                if (currentUsageCount >= promoCodeEntity.getMaxUsages()) {
+                    throw new BusinessRuleException(
+                            "Le code promo '" + promoCode + "' a atteint sa limite d'utilisation");
+                }
+            }
+
+            BigDecimal promoDiscount = sousTotalHt
+                    .multiply(promoCodeEntity.getDiscountPercentage().divide(new BigDecimal("100")));
+            discountAmount = discountAmount.add(promoDiscount);
         }
 
         return discountAmount.setScale(2, RoundingMode.HALF_UP);

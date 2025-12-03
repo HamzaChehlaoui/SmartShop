@@ -143,9 +143,7 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toResponse(payment);
     }
 
-    /**
-     * Validate payment according to type
-     */
+
     private void validatePaymentType(PaymentCreateRequest request) {
         switch (request.getTypePaiement()) {
             case ESPECES:

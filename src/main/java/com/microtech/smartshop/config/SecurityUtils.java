@@ -10,9 +10,7 @@ public class SecurityUtils {
 
     private static final String USER_SESSION_KEY = "LOGGED_USER";
 
-    /**
-     * Get the currently logged-in user from session
-     */
+
     public static User getCurrentUser(HttpSession session) {
         if (session == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session invalide");
@@ -24,9 +22,7 @@ public class SecurityUtils {
         return user;
     }
 
-    /**
-     * Check if current user is ADMIN
-     */
+
     public static void requireAdmin(HttpSession session) {
         User user = getCurrentUser(session);
         if (user.getRole() != UserRole.ADMIN) {
@@ -34,9 +30,7 @@ public class SecurityUtils {
         }
     }
 
-    /**
-     * Check if current user is CLIENT
-     */
+
     public static void requireClient(HttpSession session) {
         User user = getCurrentUser(session);
         if (user.getRole() != UserRole.CLIENT) {
@@ -44,11 +38,7 @@ public class SecurityUtils {
         }
     }
 
-    /**
-     * Check if current user can access client data
-     * ADMIN: can access any client
-     * CLIENT: can only access their own data
-     */
+
     public static void checkClientAccess(HttpSession session, Long clientId) {
         User user = getCurrentUser(session);
 
@@ -64,9 +54,7 @@ public class SecurityUtils {
         }
     }
 
-    /**
-     * Get client ID for current CLIENT user
-     */
+
     public static Long getCurrentClientId(HttpSession session) {
         User user = getCurrentUser(session);
         if (user.getRole() != UserRole.CLIENT) {
@@ -78,9 +66,7 @@ public class SecurityUtils {
         return user.getClient().getId();
     }
 
-    /**
-     * Check if user is ADMIN or the client owner
-     */
+
     public static boolean isAdminOrOwner(HttpSession session, Long clientId) {
         User user = getCurrentUser(session);
 
