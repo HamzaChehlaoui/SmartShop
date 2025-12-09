@@ -4,7 +4,6 @@ import com.microtech.smartshop.dto.request.CommandeCreateRequest;
 import com.microtech.smartshop.dto.request.OrderItemRequest;
 import com.microtech.smartshop.dto.response.CommandeResponse;
 import com.microtech.smartshop.entity.*;
-import com.microtech.smartshop.enums.CustomerTier;
 import com.microtech.smartshop.enums.OrderStatus;
 import com.microtech.smartshop.exception.BusinessRuleException;
 import com.microtech.smartshop.exception.ResourceNotFoundException;
@@ -20,6 +19,9 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

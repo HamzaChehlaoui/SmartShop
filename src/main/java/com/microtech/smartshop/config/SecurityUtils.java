@@ -31,12 +31,6 @@ public class SecurityUtils {
     }
 
 
-    public static void requireClient(HttpSession session) {
-        User user = getCurrentUser(session);
-        if (user.getRole() != UserRole.CLIENT) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accès refusé. Privilèges CLIENT requis.");
-        }
-    }
 
 
     public static void checkClientAccess(HttpSession session, Long clientId) {
@@ -67,17 +61,5 @@ public class SecurityUtils {
     }
 
 
-    public static boolean isAdminOrOwner(HttpSession session, Long clientId) {
-        User user = getCurrentUser(session);
 
-        if (user.getRole() == UserRole.ADMIN) {
-            return true;
-        }
-
-        if (user.getRole() == UserRole.CLIENT && user.getClient() != null) {
-            return user.getClient().getId().equals(clientId);
-        }
-
-        return false;
-    }
 }
