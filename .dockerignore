@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Maven - keep only the jar files
+target/*
+!target/*.jar
+
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+HELP.md
+*.md
+
+# Test files
+src/test/
+
+# Diagrams
+diagramme_de_class/

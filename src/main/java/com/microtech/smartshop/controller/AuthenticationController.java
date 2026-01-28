@@ -1,6 +1,7 @@
 package com.microtech.smartshop.controller;
 
 import com.microtech.smartshop.dto.request.UserCreateRequestDTO;
+import com.microtech.smartshop.dto.request.LoginRequestDTO;
 import com.microtech.smartshop.dto.response.UserResponseDTO;
 import com.microtech.smartshop.service.AuthenticationService;
 import jakarta.servlet.http.HttpSession;
@@ -28,11 +29,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody UserCreateRequestDTO request,
+    public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody LoginRequestDTO request,
             HttpSession session) {
-
         UserResponseDTO response = authenticationService.login(request, session);
-
         return ResponseEntity.ok(response);
     }
 

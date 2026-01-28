@@ -1,10 +1,6 @@
 package com.microtech.smartshop.dto.request;
 
-import com.microtech.smartshop.entity.Client;
-import com.microtech.smartshop.enums.UserRole;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-
 import lombok.*;
 
 @Getter
@@ -12,18 +8,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCreateRequestDTO {
+public class LoginRequestDTO {
 
     @NotBlank(message = "Le nom d'utilisateur est obligatoire")
-    @Size(min = 3, max = 50)
     private String username;
 
     @NotBlank(message = "Le mot de passe est obligatoire")
-    @Size(min = 6, max = 100)
     private String password;
-
-    @NotNull(message = "Les informations du client sont obligatoires")
-    @Valid
-    private ClientCreateRequestDTO  client ;
-
 }

@@ -2,6 +2,7 @@ package com.microtech.smartshop.service;
 
 import com.microtech.smartshop.config.SessionInterceptor;
 import com.microtech.smartshop.dto.request.ClientCreateRequestDTO;
+import com.microtech.smartshop.dto.request.LoginRequestDTO;
 import com.microtech.smartshop.dto.request.UserCreateRequestDTO;
 import com.microtech.smartshop.dto.response.UserResponseDTO;
 import com.microtech.smartshop.entity.Client;
@@ -65,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public UserResponseDTO login(UserCreateRequestDTO request, HttpSession session) {
+    public UserResponseDTO login(LoginRequestDTO request, HttpSession session) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));

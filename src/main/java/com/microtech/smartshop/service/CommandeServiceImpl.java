@@ -19,9 +19,6 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -256,4 +253,5 @@ public class CommandeServiceImpl implements CommandeService {
 
         return discountAmount.setScale(2, RoundingMode.HALF_UP);
     }
+
 }

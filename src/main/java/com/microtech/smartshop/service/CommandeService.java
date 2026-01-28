@@ -2,6 +2,7 @@ package com.microtech.smartshop.service;
 
 import com.microtech.smartshop.dto.request.CommandeCreateRequest;
 import com.microtech.smartshop.dto.response.CommandeResponse;
+import com.microtech.smartshop.entity.Client;
 import com.microtech.smartshop.entity.Commande;
 import com.microtech.smartshop.enums.OrderStatus;
 
