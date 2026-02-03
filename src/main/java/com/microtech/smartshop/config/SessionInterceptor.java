@@ -16,6 +16,9 @@ public class SessionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
         String requestURI = request.getRequestURI();
 
         if (requestURI.startsWith("/api/auth/") ||
